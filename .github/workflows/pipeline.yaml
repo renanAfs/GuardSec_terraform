@@ -1,0 +1,30 @@
+name: Terraform GuardSec
+
+on:
+  push:
+    branches:
+    - main
+
+env:
+  TERRAFORM_VERSION  : 1.9.8
+
+jobs:
+  ci-test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: $TERRAFORM_VERSION
+    - uses: actions/checkout@v4
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id    : ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token    : ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region           : us-east-1
+    - run: terraform -chdir=./terraform/aws init
+    - run: terraform -chdir=./terraform/aws validate
+    - run: terraform -chdir=./terraform/aws plan -out tfplan
+    - run: terraform -chdir=./terraform/aws apply tfplan
+ 
