@@ -7,7 +7,7 @@ terraform {
   }
   backend "s3" {
     bucket         = "guardsec-tf-s3"
-    key            = "terraform.tfstate"
+    key            = "tfstate"
     dynamodb_table = "guardsec-tf-dynamo"
     region         = "us-east-1"
   }
