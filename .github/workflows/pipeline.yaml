@@ -10,7 +10,7 @@ env:
 
 jobs:
   ci-test:
-    name: Test
+    name: Terraform Pipeline - AWS Setup
     runs-on: ubuntu-latest
     steps:
     - uses: hashicorp/setup-terraform@v3
