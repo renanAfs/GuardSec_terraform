@@ -9,7 +9,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "Nome do projeto para usar como prefixo nos recursos."
   type        = string
-  default     = "GuardSec"
+  default     = "guardsec"
 }
 
 variable "instance_type" {
