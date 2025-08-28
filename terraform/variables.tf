@@ -43,14 +43,14 @@ variable "db_password" {
   default = "fiap"
 }
 
-variable "fortigate_ami" {
-  description = "ID da AMI para a VM do FortiGate (obtenha do AWS Marketplace)."
-  type        = string
-  # Exemplo: "ami-xxxxxxxxxxxxxxxxx"
-}
+# variable "fortigate_ami" {
+#   description = "ID da AMI para a VM do FortiGate (obtenha do AWS Marketplace)."
+#   type        = string
+#   # Exemplo: "ami-xxxxxxxxxxxxxxxxx"
+# }
 
-variable "fortimanager_ami" {
-  description = "ID da AMI para a VM do FortiManager (obtenha do AWS Marketplace)."
-  type        = string
-  # Exemplo: "ami-xxxxxxxxxxxxxxxxx"
-}
+# variable "fortimanager_ami" {
+#   description = "ID da AMI para a VM do FortiManager (obtenha do AWS Marketplace)."
+#   type        = string
+#   # Exemplo: "ami-xxxxxxxxxxxxxxxxx"
+# }

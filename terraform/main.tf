@@ -40,18 +40,18 @@ module "compute" {
 # Cria as instâncias EC2 para o FortiGate e FortiManager.
 # ATENÇÃO: Requer AMIs da AWS Marketplace e licenças (NÃO É FREE TIER).
 # ------------------------------------------------------------------------------
-module "fortinet" {
-  source = "./modules/fortinet"
+# module "fortinet" {
+#   source = "./modules/fortinet"
 
-  project_name = var.project_name
-  vpc_id = module.network.security_vpc_id
-  public_subnet_id = module.network.security_public_subnet_id
-  fortinet_sg_id = module.network.fortinet_sg_id
+#   project_name = var.project_name
+#   vpc_id = module.network.security_vpc_id
+#   public_subnet_id = module.network.security_public_subnet_id
+#   fortinet_sg_id = module.network.fortinet_sg_id
   
-  # Você precisa obter os IDs das AMIs do AWS Marketplace
-  fortigate_ami   = var.fortigate_ami
-  fortimanager_ami = var.fortimanager_ami
-}
+#   # Você precisa obter os IDs das AMIs do AWS Marketplace
+#   fortigate_ami   = var.fortigate_ami
+#   fortimanager_ami = var.fortimanager_ami
+# }
 
 # ------------------------------------------------------------------------------
 # SERVIÇOS ADICIONAIS
