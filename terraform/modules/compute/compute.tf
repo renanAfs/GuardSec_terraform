@@ -3,28 +3,28 @@
 # -------------------------------------------------------------
 # IAM Role para as Instâncias EC2
 # -------------------------------------------------------------
-resource "aws_iam_role" "ec2_role" {
-  name = "${var.project_name}-ec2-role"
-  assume_role_policy = jsonencode({
-    Version   = "2012-10-17",
-    Statement = [{
-      Action    = "sts:AssumeRole",
-      Effect    = "Allow",
-      Principal = { Service = "ec2.amazonaws.com" },
-    }]
-  })
-}
+# resource "aws_iam_role" "ec2_role" {
+#   name = "${var.project_name}-ec2-role"
+#   assume_role_policy = jsonencode({
+#     Version   = "2012-10-17",
+#     Statement = [{
+#       Action    = "sts:AssumeRole",
+#       Effect    = "Allow",
+#       Principal = { Service = "ec2.amazonaws.com" },
+#     }]
+#   })
+# }
 
 # Permite que as instâncias se conectem ao Systems Manager (bom para gerenciamento)
-resource "aws_iam_role_policy_attachment" "ssm_policy" {
-  role       = aws_iam_role.ec2_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
+# resource "aws_iam_role_policy_attachment" "ssm_policy" {
+#   role       = aws_iam_role.ec2_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+# }
 
-resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "${var.project_name}-ec2-profile"
-  role = aws_iam_role.ec2_role.name
-}
+# resource "aws_iam_instance_profile" "ec2_profile" {
+#   name = "${var.project_name}-ec2-profile"
+#   role = aws_iam_role.ec2_role.name
+# }
 
 
 # -------------------------------------------------------------
@@ -37,7 +37,6 @@ resource "aws_instance" "web_server" {
   # Distribui as 4 instâncias pelas 2 subnets privadas
   subnet_id     = var.private_subnet_ids[count.index % 2]
   vpc_security_group_ids = [var.web_server_sg_id]
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 
   tags = {
     Name = "${var.project_name}-web-${count.index + 1}"
