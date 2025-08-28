@@ -17,22 +17,21 @@ module "network" {
 
 # ------------------------------------------------------------------------------
 # MÓDULO DE COMPUTAÇÃO
-# Cria as instâncias EC2 da aplicação e o banco de dados RDS.
+# Cria o Auto Scaling Group para as instâncias e o banco de dados RDS.
 # ------------------------------------------------------------------------------
 module "compute" {
   source = "./modules/compute"
 
   project_name = var.project_name
-  vpc_id = module.network.main_vpc_id
-  private_subnet_ids = module.network.private_subnet_ids
-  web_server_sg_id = module.network.web_server_sg_id
-  db_sg_id = module.network.db_sg_id
-  alb_target_group_arn = module.network.alb_target_group_arn
-  instance_ami = var.instance_ami
-  instance_type = var.instance_type # Free Tier: t2.micro
-  db_instance_class = var.db_instance_class # Free Tier: db.t2.micro
-  db_username = var.db_username
-  db_password = var.db_password
+  private_subnet_ids     = module.network.private_subnet_ids
+  web_server_sg_id       = module.network.web_server_sg_id
+  db_sg_id               = module.network.db_sg_id
+  alb_target_group_arn   = module.network.alb_target_group_arn
+  instance_ami           = var.instance_ami
+  instance_type          = var.instance_type # Free Tier: t2.micro
+  db_instance_class      = var.db_instance_class # Free Tier: db.t2.micro
+  db_username            = var.db_username
+  db_password            = var.db_password
 }
 
 # ------------------------------------------------------------------------------
@@ -43,10 +42,10 @@ module "compute" {
 # module "fortinet" {
 #   source = "./modules/fortinet"
 
-#   project_name = var.project_name
-#   vpc_id = module.network.security_vpc_id
-#   public_subnet_id = module.network.security_public_subnet_id
-#   fortinet_sg_id = module.network.fortinet_sg_id
+#   project_name      = var.project_name
+#   vpc_id            = module.network.security_vpc_id
+#   public_subnet_id  = module.network.security_public_subnet_id
+#   fortinet_sg_id    = module.network.fortinet_sg_id
   
 #   # Você precisa obter os IDs das AMIs do AWS Marketplace
 #   fortigate_ami   = var.fortigate_ami
@@ -68,6 +67,11 @@ resource "aws_cloudtrail" "main_trail" {
 
 resource "aws_s3_bucket" "trail_bucket" {
   bucket = "${var.project_name}-trail-logs-${random_string.bucket_suffix.result}"
+  # Em 2025, a AWS pode exigir a propriedade do objeto como "BucketOwnerEnforced"
+  object_lock_enabled = false
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "random_string" "bucket_suffix" {

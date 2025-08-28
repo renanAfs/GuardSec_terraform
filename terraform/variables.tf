@@ -21,7 +21,8 @@ variable "instance_type" {
 variable "instance_ami" {
   description = "AMI para as instâncias EC2. Use a AMI mais recente do Amazon Linux 2 para a sua região."
   type        = string
-  default     = "ami-0c55b159cbfafe1f0" # Exemplo para us-east-1
+  # Exemplo para Amazon Linux 2023 em us-east-1
+  default     = "ami-0c55b159cbfafe1f0" 
 }
 
 variable "db_instance_class" {
@@ -33,7 +34,7 @@ variable "db_instance_class" {
 variable "db_username" {
   description = "Usuário master do banco de dados RDS."
   type        = string
-  default     = "guardsec"
+  default     = "guarduser"
 }
 
 variable "db_password" {
@@ -43,14 +44,12 @@ variable "db_password" {
   default = "fiap"
 }
 
-# variable "fortigate_ami" {
-#   description = "ID da AMI para a VM do FortiGate (obtenha do AWS Marketplace)."
-#   type        = string
-#   # Exemplo: "ami-xxxxxxxxxxxxxxxxx"
-# }
+variable "fortigate_ami" {
+  description = "ID da AMI para a VM do FortiGate (obtenha do AWS Marketplace)."
+  type        = string
+}
 
-# variable "fortimanager_ami" {
-#   description = "ID da AMI para a VM do FortiManager (obtenha do AWS Marketplace)."
-#   type        = string
-#   # Exemplo: "ami-xxxxxxxxxxxxxxxxx"
-# }
+variable "fortimanager_ami" {
+  description = "ID da AMI para a VM do FortiManager (obtenha do AWS Marketplace)."
+  type        = string
+}
