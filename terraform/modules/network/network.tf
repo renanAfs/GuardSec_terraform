@@ -197,7 +197,7 @@ resource "aws_vpc_peering_connection" "main_to_security" {
 # -------------------------------------------------------------
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
-  description = "Permite tráfego HTTP/HTTPS para o ALB"
+  description = "Permite trafego HTTP HTTPS para o ALB"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port   = 80
@@ -221,7 +221,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_security_group" "web_server" {
   name        = "${var.project_name}-web-sg"
-  description = "Permite tráfego do ALB para os web servers"
+  description = "Permite trafego do ALB para os web servers"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port       = 80
@@ -239,7 +239,7 @@ resource "aws_security_group" "web_server" {
 
 resource "aws_security_group" "db" {
   name        = "${var.project_name}-db-sg"
-  description = "Permite tráfego dos web servers para o RDS"
+  description = "Permite trafego dos web servers para o RDS"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port       = 5432 // Exemplo para PostgreSQL
