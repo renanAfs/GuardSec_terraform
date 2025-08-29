@@ -25,9 +25,11 @@ variable "instance_ami" {
 }
 
 variable "db_instance_class" {
-  description = "Classe de instância para o RDS."
+  description = "Classe de instancia para o RDS."
   type        = string
-  default     = "db.t2.micro" # Free Tier
+  # ATENCAO: PostgreSQL 16+ nao e compativel com t2.micro.
+  # Usando t4g.micro, que tambem faz parte do Free Tier moderno da AWS.
+  default     = "db.t4g.micro"
 }
 
 variable "db_username" {
