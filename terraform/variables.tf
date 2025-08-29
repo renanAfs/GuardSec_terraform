@@ -42,7 +42,7 @@ variable "db_password" {
   description = "Senha do usuário master do banco de dados RDS."
   type        = string
   sensitive   = true
-  default = "fiap"
+  default = "guardsecfiap2025"
 }
 
 # variable "fortigate_ami" {
