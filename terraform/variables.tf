@@ -19,10 +19,9 @@ variable "instance_type" {
 }
 
 variable "instance_ami" {
-  description = "AMI para as instâncias EC2. Use a AMI mais recente do Amazon Linux 2 para a sua região."
+  description = "AMI para as instancias EC2. Este valor sera ignorado pois estamos usando busca dinamica."
   type        = string
-  # Exemplo para Amazon Linux 2023 em us-east-1
-  default     = "ami-0c55b159cbfafe1f0" 
+  default     = null # Removemos a AMI fixa daqui
 }
 
 variable "db_instance_class" {

@@ -1,29 +1,31 @@
 # modules/compute/main.tf
 
+# PROCURA DINAMICAMENTE A AMI MAIS RECENTE DO AMAZON LINUX 2023
+data "aws_ami" "amazon_linux_2023" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 # -------------------------------------------------------------
 # Launch Template para o Auto Scaling Group
-# Define a configuração das instâncias EC2
 # -------------------------------------------------------------
 resource "aws_launch_template" "web_server" {
   name_prefix   = "${var.project_name}-lt-"
-  image_id      = var.instance_ami
+  # ALTERADO AQUI: Usa a AMI encontrada dinamicamente
+  image_id      = data.aws_ami.amazon_linux_2023.id
   instance_type = var.instance_type
   
-  # Associa o Security Group criado no módulo de rede
   vpc_security_group_ids = [var.web_server_sg_id]
-
-  # Adicione aqui um script de User Data se precisar instalar
-  # um servidor web ou sua aplicação no boot da instância.
-  /*
-  user_data = base64encode <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              systemctl start httpd
-              systemctl enable httpd
-              echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
-              EOF
-  */
 
   tag_specifications {
     resource_type = "instance"
@@ -41,35 +43,25 @@ resource "aws_launch_template" "web_server" {
 
 # -------------------------------------------------------------
 # Auto Scaling Group
-# Gerencia a criação e o ciclo de vida das instâncias EC2
 # -------------------------------------------------------------
 resource "aws_autoscaling_group" "web_server" {
   name_prefix = "${var.project_name}-asg-"
-
-  # Define o número de instâncias
   min_size             = 2
   max_size             = 4
-  desired_capacity     = 4 # Inicia com 4 instâncias conforme o diagrama
-
-  # Subnets onde o ASG pode lançar instâncias
+  desired_capacity     = 4
   vpc_zone_identifier  = var.private_subnet_ids
 
-  # Link para o Launch Template
   launch_template {
     id      = aws_launch_template.web_server.id
     version = "$Latest"
   }
 
-  # Anexa as instâncias automaticamente ao Target Group do ALB
   target_group_arns = [var.alb_target_group_arn]
 
-  # Garante que novas instâncias sejam criadas antes das antigas serem terminadas
-  # durante uma atualização, para evitar downtime.
   lifecycle {
     create_before_destroy = true
   }
 
-  # Tags que serão aplicadas às instâncias lançadas pelo ASG
   tag {
     key                 = "Project"
     value               = var.project_name
@@ -85,7 +77,6 @@ resource "aws_autoscaling_group" "web_server" {
 
 # -------------------------------------------------------------
 # Banco de Dados RDS Multi-AZ
-# (Nenhuma mudança nesta seção)
 # -------------------------------------------------------------
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-db-subnet-group"
@@ -97,17 +88,17 @@ resource "aws_db_subnet_group" "main" {
 
 resource "aws_db_instance" "main" {
   identifier           = "${var.project_name}-rds"
-  allocated_storage    = 20 # Mínimo para Free Tier
+  allocated_storage    = 20
   engine               = "postgres"
-  engine_version       = "15.5" # Use uma versão recente
+  # ALTERADO AQUI: Usa uma versão mais recente e comum
+  engine_version       = "16.3"
   instance_class       = var.db_instance_class
   db_name              = "${var.project_name}db"
   username             = var.db_username
   password             = var.db_password
   db_subnet_group_name = aws_db_subnet_group.main.name
   vpc_security_group_ids = [var.db_sg_id]
-  multi_az             = true # Conforme o diagrama
+  multi_az             = true
   skip_final_snapshot  = true
-  # Habilita o backup automático para o Free Tier (7 dias de retenção)
   backup_retention_period = 7
 }
