@@ -51,31 +51,3 @@ module "compute" {
 #   fortigate_ami   = var.fortigate_ami
 #   fortimanager_ami = var.fortimanager_ami
 # }
-
-# ------------------------------------------------------------------------------
-# SERVIÇOS ADICIONAIS
-# ------------------------------------------------------------------------------
-
-# Cria uma trilha do CloudTrail para monitorar as chamadas de API
-resource "aws_cloudtrail" "main_trail" {
-  name                          = "${var.project_name}-trail"
-  s3_bucket_name                = aws_s3_bucket.trail_bucket.id
-  include_global_service_events = true
-  is_multi_region_trail         = true
-  enable_logging                = true
-}
-
-resource "aws_s3_bucket" "trail_bucket" {
-  bucket = "${var.project_name}-trail-logs-${random_string.bucket_suffix.result}"
-  # Em 2025, a AWS pode exigir a propriedade do objeto como "BucketOwnerEnforced"
-  object_lock_enabled = false
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "random_string" "bucket_suffix" {
-  length  = 8
-  special = false
-  upper   = false
-}

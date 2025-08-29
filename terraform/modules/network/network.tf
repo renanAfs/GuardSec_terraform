@@ -251,7 +251,7 @@ resource "aws_security_group" "db" {
 
 resource "aws_security_group" "fortinet" {
   name        = "${var.project_name}-fortinet-sg"
-  description = "SG para instâncias Fortinet"
+  description = "SG para instancias Fortinet"
   vpc_id      = aws_vpc.security.id
   # Adicione aqui as regras necessárias para gerenciar o FortiGate/FortiManager
   ingress {
