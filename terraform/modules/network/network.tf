@@ -197,7 +197,7 @@ resource "aws_vpc_peering_connection" "main_to_security" {
 # -------------------------------------------------------------
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
-  description = "Permite tráfego HTTP/HTTPS para o ALB"
+  description = "Permite trafego HTTP HTTPS para o ALB"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port   = 80
@@ -221,7 +221,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_security_group" "web_server" {
   name        = "${var.project_name}-web-sg"
-  description = "Permite tráfego do ALB para os web servers"
+  description = "Permite trafego do ALB para os web servers"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port       = 80
@@ -239,7 +239,7 @@ resource "aws_security_group" "web_server" {
 
 resource "aws_security_group" "db" {
   name        = "${var.project_name}-db-sg"
-  description = "Permite tráfego dos web servers para o RDS"
+  description = "Permite trafego dos web servers para o RDS"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port       = 5432 // Exemplo para PostgreSQL
@@ -251,7 +251,7 @@ resource "aws_security_group" "db" {
 
 resource "aws_security_group" "fortinet" {
   name        = "${var.project_name}-fortinet-sg"
-  description = "SG para instâncias Fortinet"
+  description = "SG para instancias Fortinet"
   vpc_id      = aws_vpc.security.id
   # Adicione aqui as regras necessárias para gerenciar o FortiGate/FortiManager
   ingress {
@@ -265,6 +265,37 @@ resource "aws_security_group" "fortinet" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# -------------------------------------------------------------
+# Route 53 - Adicionado Conforme Solicitado
+# -------------------------------------------------------------
+
+# Cria a Hosted Zone (area de DNS) para o seu dominio.
+# ATENCAO: So sera criado se a variavel 'domain_name' for fornecida.
+resource "aws_route53_zone" "main" {
+  # Este 'count' faz com que o recurso so seja criado se a variavel nao estiver vazia
+  count = var.domain_name != "" ? 1 : 0
+  
+  name  = var.domain_name
+}
+
+# Cria o registro DNS (ex: app.seudominio.com) apontando para o Load Balancer
+resource "aws_route53_record" "app" {
+  # Este 'count' garante que o registro so seja criado junto com a zona
+  count   = var.domain_name != "" ? 1 : 0
+  
+  zone_id = aws_route53_zone.main[0].zone_id
+  name    = "${var.subdomain}.${var.domain_name}"
+  type    = "A"
+
+  # 'alias' e a forma correta na AWS para apontar para recursos como ALBs,
+  # pois os IPs deles podem mudar.
+  alias {
+    name                   = aws_lb.main.dns_name
+    zone_id                = aws_lb.main.zone_id
+    evaluate_target_health = true
   }
 }
 
