@@ -269,6 +269,37 @@ resource "aws_security_group" "fortinet" {
 }
 
 # -------------------------------------------------------------
+# Route 53 - Adicionado Conforme Solicitado
+# -------------------------------------------------------------
+
+# Cria a Hosted Zone (area de DNS) para o seu dominio.
+# ATENCAO: So sera criado se a variavel 'domain_name' for fornecida.
+resource "aws_route53_zone" "main" {
+  # Este 'count' faz com que o recurso so seja criado se a variavel nao estiver vazia
+  count = var.domain_name != "" ? 1 : 0
+  
+  name  = var.domain_name
+}
+
+# Cria o registro DNS (ex: app.seudominio.com) apontando para o Load Balancer
+resource "aws_route53_record" "app" {
+  # Este 'count' garante que o registro so seja criado junto com a zona
+  count   = var.domain_name != "" ? 1 : 0
+  
+  zone_id = aws_route53_zone.main[0].zone_id
+  name    = "${var.subdomain}.${var.domain_name}"
+  type    = "A"
+
+  # 'alias' e a forma correta na AWS para apontar para recursos como ALBs,
+  # pois os IPs deles podem mudar.
+  alias {
+    name                   = aws_lb.main.dns_name
+    zone_id                = aws_lb.main.zone_id
+    evaluate_target_health = true
+  }
+}
+
+# -------------------------------------------------------------
 # Outros
 # -------------------------------------------------------------
 data "aws_availability_zones" "available" {}

@@ -13,6 +13,8 @@ module "network" {
 
   project_name = var.project_name
   aws_region   = var.aws_region
+  domain_name = var.domain_name
+  subdomain    = var.subdomain
 }
 
 # ------------------------------------------------------------------------------

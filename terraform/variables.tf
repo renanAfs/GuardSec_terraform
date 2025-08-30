@@ -45,6 +45,18 @@ variable "db_password" {
   default = "guardsecfiap2025"
 }
 
+variable "domain_name" {
+  description = "Seu nome de dominio registrado (ex: seudominio.com.br). Deixe em branco se nao quiser criar a zona DNS."
+  type        = string
+  default     = "guardsec.com.br"
+}
+
+variable "subdomain" {
+  description = "O subdominio para a aplicacao (ex: 'app', 'www', etc.)."
+  type        = string
+  default     = "app"
+}
+
 # variable "fortigate_ami" {
 #   description = "ID da AMI para a VM do FortiGate (obtenha do AWS Marketplace)."
 #   type        = string
