@@ -15,3 +15,17 @@ output "route53_zone_name_servers" {
   # A funcao 'try' evita erros caso a zona nao seja criada (se domain_name for vazio)
   value       = try(aws_route53_zone.main[0].name_servers, [])
 }
+output "alb_target_group_blue_arn" {
+  description = "ARN of the Blue target group"
+  value       = aws_lb_target_group.blue.arn
+}
+
+output "alb_target_group_green_arn" {
+  description = "ARN of the Green target group"
+  value       = aws_lb_target_group.green.arn
+}
+
+output "alb_zone_id" {
+  description = "Zone ID of the ALB"
+  value       = aws_lb.main.zone_id
+}
