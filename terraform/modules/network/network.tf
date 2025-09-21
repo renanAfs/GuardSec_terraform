@@ -303,3 +303,17 @@ resource "aws_route53_record" "app" {
 # Outros
 # -------------------------------------------------------------
 data "aws_availability_zones" "available" {}
+
+# -------------------------------------------------------------
+# AWS Shield Advanced
+# -------------------------------------------------------------
+resource "aws_shield_protection" "main" {
+  count = var.enable_shield_advanced ? 1 : 0
+
+  name         = "${var.project_name}-shield-protection"
+  resource_arn = aws_lb.main.arn
+
+  tags = {
+    Name = "${var.project_name}-shield-protection"
+  }
+}

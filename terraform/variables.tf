@@ -57,12 +57,14 @@ variable "subdomain" {
   default     = "app"
 }
 
-# variable "fortigate_ami" {
-#   description = "ID da AMI para a VM do FortiGate (obtenha do AWS Marketplace)."
-#   type        = string
-# }
+variable "fortigate_ami" {
+  description = "ID da AMI para a VM do FortiGate (obtenha do AWS Marketplace)."
+  type        = string
+  default     = "ami-064a767bb262b3a52"
+}
 
-# variable "fortimanager_ami" {
-#   description = "ID da AMI para a VM do FortiManager (obtenha do AWS Marketplace)."
-#   type        = string
-# }
+variable "fortimanager_ami" {
+  description = "ID da AMI para a VM do FortiManager (obtenha do AWS Marketplace)."
+  type        = string
+  default     = "ami-0e3cd591a35081c79"
+}
