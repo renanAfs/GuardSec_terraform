@@ -51,3 +51,101 @@ resource "aws_sns_topic" "notifications" {
   count = var.notification_topic_arn == "" ? 1 : 0
   name  = "${var.project_name}-notifications"
 }
+
+# -------------------------------------------------------------
+# CloudTrail
+# -------------------------------------------------------------
+
+# Bucket S3 para armazenar os logs do CloudTrail
+resource "aws_s3_bucket" "cloudtrail_logs" {
+  bucket = "${var.project_name}-cloudtrail-logs-${random_id.bucket_suffix.hex}"
+}
+
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
+}
+
+# Política do Bucket S3 para permitir que o CloudTrail escreva nele
+resource "aws_s3_bucket_policy" "cloudtrail_policy" {
+  bucket = aws_s3_bucket.cloudtrail_logs.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "AWSCloudTrailAclCheck",
+        Effect    = "Allow",
+        Principal = { Service = "cloudtrail.amazonaws.com" },
+        Action    = "s3:GetBucketAcl",
+        Resource  = aws_s3_bucket.cloudtrail_logs.arn
+      },
+      {
+        Sid       = "AWSCloudTrailWrite",
+        Effect    = "Allow",
+        Principal = { Service = "cloudtrail.amazonaws.com" },
+        Action    = "s3:PutObject",
+        Resource  = "${aws_s3_bucket.cloudtrail_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+        Condition = {
+          StringEquals = { "s3:x-amz-acl" = "bucket-owner-full-control" }
+        }
+      }
+    ]
+  })
+}
+
+# Trilha do CloudTrail
+resource "aws_cloudtrail" "main" {
+  name                          = "${var.project_name}-trail"
+  s3_bucket_name                = aws_s3_bucket.cloudtrail_logs.id
+  is_multi_region_trail         = true
+  include_global_service_events = true
+  enable_logging                = true
+
+  # Integração com o CloudWatch Logs
+  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
+  cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_to_cloudwatch.arn
+
+  depends_on = [aws_s3_bucket_policy.cloudtrail_policy]
+}
+
+# Grupo de Logs do CloudWatch para o CloudTrail
+resource "aws_cloudwatch_log_group" "cloudtrail" {
+  name = "/aws/cloudtrail/${var.project_name}"
+  retention_in_days = 90
+}
+
+# Role para permitir que o CloudTrail envie logs para o CloudWatch
+resource "aws_iam_role" "cloudtrail_to_cloudwatch" {
+  name = "${var.project_name}-cloudtrail-cw-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "cloudtrail.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "cloudtrail_to_cloudwatch" {
+  name = "${var.project_name}-cloudtrail-cw-policy"
+  role = aws_iam_role.cloudtrail_to_cloudwatch.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
+      }
+    ]
+  })
+}
+
+data "aws_caller_identity" "current" {}
