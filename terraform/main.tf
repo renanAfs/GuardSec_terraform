@@ -4,17 +4,6 @@ provider "aws" {
   region = var.aws_region
 }
 
-module "codedeploy" {
-  source = "./modules/codedeploy"
-
-  project_name            = var.project_name
-  asg_name                = module.compute.asg_name
-  alb_listener_arn        = module.network.alb_listener_arn
-  blue_target_group_name  = module.network.alb_target_group_blue_name
-  green_target_group_name = module.network.alb_target_group_green_name
-  service_role_arn        = var.codedeploy_service_role_arn
-}
-
 # ------------------------------------------------------------------------------
 # MÓDULO DE REDE
 # Cria as VPCs, subnets, peering, Load Balancer, WAF, Security Groups, etc.
