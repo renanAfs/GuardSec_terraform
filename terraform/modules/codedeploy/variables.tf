@@ -24,3 +24,8 @@ variable "green_target_group_name" {
   description = "Nome do Target Group 'Green'"
   type        = string
 }
+
+variable "service_role_arn" {
+  description = "ARN of the IAM service role for CodeDeploy"
+  type        = string
+}

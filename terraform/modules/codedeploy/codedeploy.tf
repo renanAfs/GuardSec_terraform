@@ -8,7 +8,7 @@ resource "aws_codedeploy_app" "main" {
 resource "aws_codedeploy_deployment_group" "blue_green" {
   app_name               = aws_codedeploy_app.main.name
   deployment_group_name  = "${var.project_name}-dg-blue-green"
-  service_role_arn       = aws_iam_role.codedeploy_service_role.arn
+  service_role_arn       = var.service_role_arn
   autoscaling_groups     = [var.asg_name]
   deployment_style {
     deployment_option = "WITH_TRAFFIC_CONTROL"
