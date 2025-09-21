@@ -12,6 +12,7 @@ module "codedeploy" {
   alb_listener_arn        = module.network.alb_listener_arn
   blue_target_group_name  = module.network.alb_target_group_blue_name
   green_target_group_name = module.network.alb_target_group_green_name
+  service_role_arn        = var.codedeploy_service_role_arn
 }
 
 # ------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ module "database" {
   db_instance_class = var.db_instance_class # Free Tier: db.t2.micro
   db_username       = var.db_username
   db_password       = var.db_password
-  db_subnet_group_name = module.network.db_subnet_group_name
+  private_subnet_ids = module.network.private_subnet_ids
   db_sg_id          = module.network.db_sg_id
 }
 

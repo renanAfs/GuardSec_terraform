@@ -1,5 +1,14 @@
 # terraform/modules/database/database.tf
 
+resource "aws_db_subnet_group" "default" {
+  name       = "${var.project_name}-db-subnet-group"
+  subnet_ids = var.private_subnet_ids
+
+  tags = {
+    Name = "${var.project_name}-db-subnet-group"
+  }
+}
+
 resource "aws_db_instance" "default" {
   count                = 2
   allocated_storage    = 20
@@ -9,7 +18,7 @@ resource "aws_db_instance" "default" {
   identifier           = "${var.project_name}-db-${count.index}"
   username             = var.db_username
   password             = var.db_password
-  db_subnet_group_name = var.db_subnet_group_name
+  db_subnet_group_name = aws_db_subnet_group.default.name
   vpc_security_group_ids = [var.db_sg_id]
   skip_final_snapshot  = true
   multi_az             = true

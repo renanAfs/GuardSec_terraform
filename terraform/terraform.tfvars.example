@@ -1,2 +1,2 @@
-
 enable_shield_advanced = false
+codedeploy_service_role_arn = "arn:aws:iam::ACCOUNT_ID:role/YOUR_CODEDEPLOY_ROLE_NAME"

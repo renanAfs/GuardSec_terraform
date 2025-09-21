@@ -68,3 +68,9 @@ variable "fortimanager_ami" {
   type        = string
   default     = "ami-0e3cd591a35081c79"
 }
+
+variable "codedeploy_service_role_arn" {
+  description = "ARN of the IAM service role for CodeDeploy"
+  type        = string
+  # Este valor deve ser fornecido em um arquivo .tfvars
+}

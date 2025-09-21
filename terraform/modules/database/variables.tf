@@ -22,9 +22,9 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "db_subnet_group_name" {
-  description = "O nome do grupo de sub-redes do banco de dados"
-  type        = string
+variable "private_subnet_ids" {
+  description = "Lista de IDs das sub-redes privadas para o grupo de sub-redes do banco de dados"
+  type        = list(string)
 }
 
 variable "db_sg_id" {
