@@ -56,7 +56,7 @@ resource "aws_autoscaling_group" "web_server" {
     version = "$Latest"
   }
 
-  target_group_arns = [var.alb_target_group_arn]
+  target_group_arns = [var.alb_target_group_blue_arn, var.alb_target_group_green_arn]
 
   lifecycle {
     create_before_destroy = true
@@ -72,33 +72,4 @@ resource "aws_autoscaling_group" "web_server" {
     value               = "${var.project_name}-web-instance-asg"
     propagate_at_launch = true
   }
-}
-
-
-# -------------------------------------------------------------
-# Banco de Dados RDS Multi-AZ
-# -------------------------------------------------------------
-resource "aws_db_subnet_group" "main" {
-  name       = "${var.project_name}-db-subnet-group"
-  subnet_ids = var.private_subnet_ids
-  tags = {
-    Name = "${var.project_name}-db-subnet-group"
-  }
-}
-
-resource "aws_db_instance" "main" {
-  identifier           = "${var.project_name}-rds"
-  allocated_storage    = 20
-  engine               = "postgres"
-  # ALTERADO AQUI: Usa uma versão mais recente e comum
-  engine_version       = "16.3"
-  instance_class       = var.db_instance_class
-  db_name              = "${var.project_name}db"
-  username             = var.db_username
-  password             = var.db_password
-  db_subnet_group_name = aws_db_subnet_group.main.name
-  vpc_security_group_ids = [var.db_sg_id]
-  multi_az             = true
-  skip_final_snapshot  = true
-  backup_retention_period = 7
 }
