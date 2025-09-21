@@ -7,5 +7,5 @@ output "app_name" {
 
 output "deployment_group_name" {
   description = "Nome do grupo de deploy Blue/Green"
-  value       = aws_codedeploy_deployment_group.blue_green.name
+  value       = aws_codedeploy_deployment_group.blue_green.deployment_group_name
 }
