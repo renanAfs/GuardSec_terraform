@@ -11,8 +11,8 @@ variable "asg_name" {
 }
 
 variable "db_instance_id" {
-  description = "ID da instância RDS"
-  type        = string
+  description = "Lista de IDs das instâncias RDS"
+  type        = list(string)
 }
 
 variable "notification_topic_arn" {

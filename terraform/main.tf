@@ -82,3 +82,31 @@ module "route53" {
   alb_dns_name = module.network.alb_dns_name
   alb_zone_id  = module.network.alb_zone_id
 }
+
+# ------------------------------------------------------------------------------
+# MÓDULO DE MONITORAMENTO E CLOUDTRAIL
+# Cria alarmes do CloudWatch e a trilha do CloudTrail.
+# ------------------------------------------------------------------------------
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  project_name       = var.project_name
+  asg_name           = module.compute.asg_name
+  db_instance_id     = module.database.db_instance_ids
+  notification_topic_arn = try(module.monitoring.notification_topic_arn, "")
+}
+
+# ------------------------------------------------------------------------------
+# MÓDULO CODEDEPLOY
+# Configura o Blue/Green deployment para a aplicação.
+# ------------------------------------------------------------------------------
+module "codedeploy" {
+  source = "./modules/codedeploy"
+
+  project_name             = var.project_name
+  asg_name                 = module.compute.asg_name
+  alb_listener_arn         = module.network.alb_listener_arn
+  blue_target_group_name   = module.network.alb_target_group_blue_name
+  green_target_group_name  = module.network.alb_target_group_green_name
+}
+

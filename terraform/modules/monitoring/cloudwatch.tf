@@ -26,7 +26,8 @@ resource "aws_cloudwatch_metric_alarm" "asg_high_cpu" {
 # Alarme de Conexões para o Banco de Dados RDS
 # -------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "db_high_connections" {
-  alarm_name          = "${var.project_name}-db-high-connections"
+  count               = length(var.db_instance_id)
+  alarm_name          = "${var.project_name}-db-high-connections-${var.db_instance_id[count.index]}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "DatabaseConnections"
@@ -37,7 +38,7 @@ resource "aws_cloudwatch_metric_alarm" "db_high_connections" {
   alarm_description   = "Alarme quando as conexões do RDS excederem 50"
 
   dimensions = {
-    DBInstanceIdentifier = var.db_instance_id
+    DBInstanceIdentifier = var.db_instance_id[count.index]
   }
 
   alarm_actions = [var.notification_topic_arn]
