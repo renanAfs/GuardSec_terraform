@@ -1,5 +1,10 @@
 # terraform/modules/monitoring/cloudwatch.tf
 
+locals {
+  # Decide qual ARN usar: o que foi passado como variável ou o do novo tópico criado.
+  effective_notification_arn = var.notification_topic_arn != "" ? var.notification_topic_arn : (length(aws_sns_topic.notifications) > 0 ? aws_sns_topic.notifications[0].arn : "")
+}
+
 # -------------------------------------------------------------
 # Alarme de CPU para o Auto Scaling Group
 # -------------------------------------------------------------
@@ -18,8 +23,8 @@ resource "aws_cloudwatch_metric_alarm" "asg_high_cpu" {
     AutoScalingGroupName = var.asg_name
   }
 
-  alarm_actions = [var.notification_topic_arn]
-  ok_actions      = [var.notification_topic_arn]
+  alarm_actions = [local.effective_notification_arn]
+  ok_actions      = [local.effective_notification_arn]
 }
 
 # -------------------------------------------------------------
@@ -41,8 +46,8 @@ resource "aws_cloudwatch_metric_alarm" "db_high_connections" {
     DBInstanceIdentifier = var.db_instance_id[count.index]
   }
 
-  alarm_actions = [var.notification_topic_arn]
-  ok_actions      = [var.notification_topic_arn]
+  alarm_actions = [local.effective_notification_arn]
+  ok_actions      = [local.effective_notification_arn]
 }
 
 # -------------------------------------------------------------
