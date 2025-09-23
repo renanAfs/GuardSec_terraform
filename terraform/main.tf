@@ -92,7 +92,7 @@ module "monitoring" {
 
   project_name       = var.project_name
   asg_name           = module.compute.asg_name
-  db_instance_id     = module.database.db_instance_ids
+  db_instance_id     = module.database.db_instance_id
   # notification_topic_arn = var.notification_topic_arn # Opcional: Passe um ARN existente se quiser
 }
 
