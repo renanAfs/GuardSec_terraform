@@ -26,8 +26,8 @@ jobs:
         aws-region           : us-east-1
     - run: terraform -chdir=./terraform init
     - run: terraform -chdir=./terraform validate
-    # - run: terraform -chdir=./terraform plan -out tfplan
-    - run: terraform -chdir=./terraform plan -destroy -out tfplan
+    - run: terraform -chdir=./terraform plan -out tfplan
+    # - run: terraform -chdir=./terraform plan -destroy -out tfplan
     - run: terraform -chdir=./terraform apply tfplan
  
 
